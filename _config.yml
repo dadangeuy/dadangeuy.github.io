@@ -1,22 +1,11 @@
-title: rizaldi.dev
-email: irsyad.rizaldi97@gmail.com
-description: 💖, ️🛵 & 👨‍💻
 url: "https://dadangeuy.github.io"
 baseurl: ""
-
+title: rizaldi.dev
+author: Irsyad Rizaldi
+email: irsyad.rizaldi97@gmail.com
+description: 💖, ️🛵 & 👨‍💻
+github_username: "dadangeuy"
+theme: minima
 plugins:
   - jekyll-feed
-
-theme: minima
-minima:
-  skin: dark
-  social_links:
-    github: dadangeuy
-    linkedin: dadangeuy
-author:
-  name: Irsyad Rizaldi
-  email: irsyad.rizaldi97@gmail.com
-
-# force github pages to pull latess version from github
-# https://stackoverflow.com/questions/68518590/does-minima-dark-skin-work-on-github-pages
-remote_theme: jekyll/minima@master
+  - jekyll-seo-tag
