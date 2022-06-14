@@ -15,7 +15,7 @@ I was inspired by other, fellow engineers:
 I know that I may not have an impact as big as them and this blog won't gain much traffic.
 
 But, let's stop with the negativity. My objective is simple: improve English; satisfy my thirst for roasting, gossip & 
-sarcasm; and leave behind something that might be interesting!
+sarcasm; and leave behind something worth to remember!
 
 Now the question is, why don't I use famous, simpler platform such as [Medium](https://medium.com/) or 
 [Wordpress](https://wordpress.com/)? Instead, why do I go with [Github Pages](https://pages.github.com/) & 
