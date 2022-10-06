@@ -9,3 +9,5 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+webmaster_verifications:
+  google: X_JKIMBzf9Gy0nhFxDZVdhCVKeVGNfBgfha1C4yRbwI
