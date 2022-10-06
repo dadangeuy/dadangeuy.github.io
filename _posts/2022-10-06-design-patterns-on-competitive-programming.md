@@ -6,24 +6,30 @@ categories: code
 ---
 
 # Introduction
+
 It's rare sight to see Design Patterns being used on Competitive Programming type of problem.
-However, after working on [uVA - 1721 - Window Manager](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=4794)
+However, after working
+on [uVA - 1721 - Window Manager](https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=4794)
 for hours, I found myself lost on a thousand lines of codes that doesn't make sense with tons of bugs.
 
 The problem is easy to understand.
 You're asked to simulate how operating system manage their windows.
-There are 4 set of operations, **OPEN** new window, **CLOSE** a window, **RESIZE** a window, and **MOVE** a window (and the collided windows).
+There are 4 set of operations, **OPEN** new window, **CLOSE** a window, **RESIZE** a window, and **MOVE** a window (and
+the collided windows).
 
 To my surprise, applying design patterns into my solution helps make the code much more sensible.
-I combined [Prototype](https://refactoring.guru/design-patterns/prototype) and [Memento](https://refactoring.guru/design-patterns/memento)
+I combined [Prototype](https://refactoring.guru/design-patterns/prototype)
+and [Memento](https://refactoring.guru/design-patterns/memento)
 patterns to build my own patterns: `Object Transaction Manager` and `Transactional Object`.
 This patterns enables me to check the effect of certain operation and make a before-after comparison.
 
-The full accepted solution can be seen on [dadangeuy/uhunt](https://github.com/dadangeuy/uhunt/blob/main/src/main/java/dev/rizaldi/uhunt/c1/p1721/Main.java).
+The full accepted solution can be seen
+on [dadangeuy/uhunt](https://github.com/dadangeuy/uhunt/blob/main/src/main/java/dev/rizaldi/uhunt/c1/p1721/Main.java).
 
 # Design Patterns
 
 ## Object Transaction Manager
+
 This pattern was inspired by transaction feature in databases.
 It's a simplified version of [Memento](https://refactoring.guru/design-patterns/memento) pattern.
 
@@ -45,11 +51,13 @@ final class Transaction<T extends Snapshot<T>> {
     }
 
     public void commit() {
-        this.snapshot = null;
+        snapshot = null;
     }
 
     public void rollback() {
-        this.object.restore(snapshot);
+        if (committed()) return;
+        object.restore(snapshot);
+        commit();
     }
 
     public T read(boolean committed) {
@@ -63,6 +71,7 @@ final class Transaction<T extends Snapshot<T>> {
 ```
 
 ## Transactional Object
+
 Transactional Object means the object's snapshot lifecycle is managed by `Transaction Manager`.
 In our case, `Window` is a Transactional Object because `Transaction` has access to create and restore its snapshot.
 
@@ -82,14 +91,28 @@ final class Window extends ImmutableWindow implements Snapshot<Window> {
         super(x, y, width, height);
         this.transaction = new Transaction<>(this);
     }
-    ...
+
+    @Override
+    public Window snapshot() {
+        return new Window(x(), y(), width(), height());
+    }
+    
+    @Override
+    public void restore(Window snapshot) {
+        x = snapshot.x();
+        y = snapshot.y();
+        width = snapshot.width();
+        height = snapshot.height();
+    }
 }
 ```
 
 # Algorithms
 
 ## Resize
+
 Resize algorithm was simple:
+
 - Find window located in (x, y)
 - Change their width and height.
 - If it goes beyond the screen OR overlap with other windows, rollback.
@@ -110,6 +133,7 @@ final class Screen {
 ```
 
 ## Move
+
 Move was complicated.
 We need to move a window and the collided windows, thus I decide to use recursive strategy to push the windows.
 
@@ -149,7 +173,7 @@ final class Screen {
         int pullDx = minLeft < 0 ? -minLeft : maxRight > width ? width - maxRight : 0;
         int pullDy = minTop < 0 ? -minTop : maxBottom > height ? height - maxBottom : 0;
         targets.forEach(t -> t.move(pullDx, pullDy));
-        ...
+        // ...
     }
 }
 ```
@@ -160,7 +184,7 @@ infer that the window doesn't collide with the other windows, thus we can revert
 ```java
 final class Screen {
     private void pullToScreen(List<MutableWindow> targets, int dx, int dy) {
-        ...
+        // ...
         Direction direction = Direction.of(dx, dy);
         targets.stream().filter(t -> !direction.equals(t.direction())).forEach(t -> t.transaction.rollback());
     }
@@ -184,8 +208,5 @@ final class Screen {
         if (actualDx != dx) throw new UnexpectedMoveError(dx, actualDx);
         if (actualDy != dy) throw new UnexpectedMoveError(dy, actualDy);
     }
-
-    private void pullToScreen(List<MutableWindow> targets, int dx, int dy) {...}
-    private void forcePush(MutableWindow moved, int dx, int dy) {...}
 }
 ```
